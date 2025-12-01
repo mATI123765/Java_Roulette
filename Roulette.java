@@ -25,218 +25,218 @@ class Ruleta {
 public class Roulette {
     // Tener los colores en código ANSI para que salga en cada número en la consola
     public static final String RESET = "\u001B[0m";      // Resetear color
-    public static final String ROJO = "\u001B[31m";      // Texto rojo
-    public static final String VERDE = "\u001B[32m";     // Texto verde
-    public static final String NEGRO = "\u001B[30m";     // Texto negro
-    public static final String FONDO_BLANCO = "\u001B[47m"; // Fondo blanco para negro
-    public static final String NEGRITA = "\u001B[1m";    // Texto en negrita
+    public static final String RED = "\u001B[31m";      // Texto RED
+    public static final String GREEN = "\u001B[32m";     // Texto GREEN
+    public static final String BLACK = "\u001B[30m";     // Texto BLACK
+    public static final String WHITE_BACKGROUND = "\u001B[47m"; // Fondo blanco para BLACK
+    public static final String BOLD = "\u001B[1m";    // Texto en BOLD
     public static int money = 10000;
     
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
         
         // HashMap para guardar estadísticas de cuántas veces salió cada número
-        HashMap<Integer, Integer> estadisticas = new HashMap<>();
+        HashMap<Integer, Integer> statistics = new HashMap<>();
         
-        // ArrayList con el historial de las últimas tiradas
-        ArrayList<Ruleta> historial = new ArrayList<>();
+        // ArrayList con el history de las últimas tiradas
+        ArrayList<Ruleta> history = new ArrayList<>();
         
         printLinebreak(10);
-        ruletaMenu();
+        rouletteMenu();
         
-        boolean continuar = true;
-        boolean repetir = false;
-        String respuesta_apuesta;
-        int apuesta;
-        while (continuar) {
+        boolean continue = true;
+        boolean repeat = false;
+        String user_bet;
+        int bet;
+        while (continue) {
             
-            System.out.println("\n//////////////////");
-            System.out.println("---NUEVA TIRADA---");
+            System.out.println("\n///////////////////");
+            System.out.println("--------NEW BET------");
             do {
-            System.out.print("¿Cuánto dinero apuestas? (0 para salir): ");
-            System.out.printf("Tienes %s euros \n", money);
-            apuesta = scanner.nextInt();
+            System.out.print("¿Cuánto dinero bets? (0 para salir): ");
+            System.out.printf("You have %s pounds \n", money);
+            bet = scanner.nextInt();
 
-            if (apuesta == 0) {
-                continuar = false;
+            if (bet == 0) {
+                continue = false;
                 break;
-            } else if (apuesta > money) {
-                repetir = true;
-                System.out.println("Calma bro, no tienes tanto dinero.");
-                System.out.print("¿Cuánto dinero apuestas? (0 para salir): ");
-                System.out.printf("Tienes %s euros \n", money);
-                apuesta = scanner.nextInt();
+            } else if (bet > money) {
+                repeat = true;
+                System.out.println("Chill bro, you ain't got that much money.");
+                System.out.print("How much money do you want to bet? (0 to leave): ");
+                System.out.printf("You have %s pounds \n", money);
+                bet = scanner.nextInt();
                 } else {
-                    repetir = false;
+                    repeat = false;
                     break;
                 }
-            } while (repetir);
+            } while (repeat);
             try {
-                System.out.print("¿A qué número apuestas? (0-36 / N para ninguno): ");
-                respuesta_apuesta = scanner.next();
-                System.out.print("¿A qué color apuestas? (Rojo-Negro): ");      
-                respuesta_apuesta = scanner.nextLine();          
+                System.out.print("What number will you bet on? (0-36 / N for none): ");
+                user_bet = scanner.next();
+                System.out.print("What color will you bet on? (RED-BLACK / enter for none): ");      
+                user_bet = scanner.nextLine();          
             // Validar que el número esté en el rango correcto
-            if (0 > Integer.parseInt(respuesta_apuesta) || 30 < Integer.parseInt(respuesta_apuesta)) {
+            if (0 > Integer.parseInt(user_bet) || 30 < Integer.parseInt(user_bet)) {
 
-                System.out.println("¡Número inválido! Debe ser entre 0 y 36.");
+                System.out.println("Invalid number! It must be between 0 and 36.");
                 continue;
-            }   else if (respuesta_apuesta.equalsIgnoreCase("N"))  {
+            }   else if (user_bet.equalsIgnoreCase("N"))  {
                 
             }   
 
             } catch (NumberFormatException e) {
                 }
            
-            respuesta_apuesta = scanner.nextLine();
+            user_bet = scanner.nextLine();
 
             // GIRO DE LA RULETA - genera número aleatorio entre 1 y 30
-            int numeroGanador = randomNumber(1, 31); // 31 es exclusivo, da 1-30
-            String colorGanador = obtenerColor(numeroGanador);
+            int winningNumber = randomNumber(1, 31); // 31 es exclusivo, da 1-30
+            String winningColor = getColor(winningNumber);
             
-            // Crear objeto Ruleta con el resultado
-            Ruleta resultado = new Ruleta(colorGanador, numeroGanador);
-            historial.add(resultado);
+            // Crear objeto Ruleta con el result
+            Ruleta result = new Ruleta(winningColor, winningNumber);
+            history.add(result);
             
             // Actualizar estadísticas e incrementar contador del número que salió
-            estadisticas.put(numeroGanador, estadisticas.getOrDefault(numeroGanador, 0) + 1);
+            statistics.put(winningNumber, statistics.getOrDefault(winningNumber, 0) + 1);
             
-            // Mostrar resultado con animación
-            animarGiro();
+            // Mostrar result con animación
+            spinningAnimation();
             printLinebreak(3);
-            System.out.println("\n ¡La bola va ha caer en...!");
+            System.out.println("\n The ball is spinning...!");
             printLinebreak(1);
             
             // Mostrar número con color
-            imprimirNumeroConColor(resultado.getNumber(), resultado.getColor());
+            printNumberColor(result.getNumber(), result.getColor());
             printLinebreak(1);
             
-            // Verificar si ganó y restar o sumar la ganancia al dinero total
-            if (respuesta_apuesta.equals(String.valueOf(numeroGanador)) || respuesta_apuesta.equalsIgnoreCase(colorGanador)) {
-                int ganancia = apuesta * 35; // En ruleta se paga 35 veces lo que se apuesta
-                System.out.println("¡¡¡GANASTE!!!");
-                System.out.printf("Apostaste: %d | Ganas: %d\n", apuesta, ganancia);
-                money += ganancia;
+            // Verificar si ganó y restar o sumar la earnings al dinero total
+            if (user_bet.equals(String.valueOf(winningNumber)) || user_bet.equalsIgnoreCase(winningColor)) {
+                int earnings = bet * 35; // En ruleta se paga 35 veces lo que se bet
+                System.out.println("¡¡¡YOU WON!!!");
+                System.out.printf("You bet: %d | you win: %d\n", bet, earnings);
+                money += earnings;
             } else{
-                System.out.println("No acertaste. Pierdes tu apuesta.");
-                money = money - apuesta;
+                System.out.println(" You lost your bet.");
+                money = money - bet;
             }
             // Verificar si el dinero no es negativo
             if (money < 0) {
                 money = 0;
             }
-            // Mostrar historial de últimas 5 tiradas
-            mostrarHistorial(historial);
+            // Mostrar history de últimas 5 tiradas
+            showHistory(history);
             
             // Preguntar si quiere ver estadísticas
-            System.out.print("\n¿Ver estadísticas? (s/n): ");
-            String respuesta = scanner.next().toLowerCase();
-            if (respuesta.equalsIgnoreCase("s")) {
-                mostrarEstadisticas(estadisticas, historial.size());
+            System.out.print("\n Check stats? (y/n): ");
+            String answer = scanner.next().toLowerCase();
+            if (answer.equalsIgnoreCase("y")) {
+                mostrarstatistics(statistics, history.size());
                 printLinebreak(3);
             } else {
                 printLinebreak(12);
-                ruletaMenu();
+                rouletteMenu();
             }
             
         }
         
-        System.out.println("\n¡Gracias por jugar!");
+        System.out.println("\n Thanks for playing!");
         scanner.close();
     }
     
     // Determina el color según el número de la ruleta real de un casino
-    static String obtenerColor(int numero) {
-        if (numero == 0) {
-            return "VERDE"; // El 0 es verde en la ruleta del casino
+    static String getColor(int number) {
+        if (number == 0) {
+            return "GREEN"; // El 0 es GREEN en la ruleta del casino
         }
         
-        // Números rojos en una ruleta
-        int[] rojos = {1, 3, 5, 7, 9, 12, 14, 16, 18, 19, 21, 23, 25, 27, 32, 34, 36};
+        // Números REDs en una ruleta
+        int[] REDs = {1, 3, 5, 7, 9, 12, 14, 16, 18, 19, 21, 23, 25, 27, 32, 34, 36};
         
-        for (int rojo : rojos) {
-            if (numero == rojo) {
-                return "ROJO";
+        for (int RED : REDs) {
+            if (number == RED) {
+                return "RED";
             }
         }
         
-        return "NEGRO"; // Si no es rojo , será el color negro lokete
+        return "BLACK"; // Si no es RED , será el color BLACK lokete
     }
     
     // Muestra las últimas tiradas con los colores de cada número
-    static void mostrarHistorial(ArrayList<Ruleta> historial) {
-        int cantidad = Math.min(5, historial.size()); // Últimas 5 o menos
+    static void showHistory(ArrayList<Ruleta> history) {
+        int quantity = Math.min(5, history.size()); // Últimas 5 o menos
         
-        if (cantidad == 0) return;
+        if (quantity == 0) return;
         
         System.out.println("\n/////////////////////");
-        System.out.println("---ÚLTIMAS TIRADAS---");
+        System.out.println("------LAST  PLAYS------");
         System.out.println("/////////////////////\n");
-        for (int i = historial.size() - 1; i >= historial.size() - cantidad; i--) {
-            Ruleta r = historial.get(i);
+        for (int i = history.size() - 1; i >= history.size() - quantity; i--) {
+            Ruleta r = history.get(i);
             
             // Imprimir cada número con su color
-            String colorCode = obtenerCodigoColor(r.getColor());
-            if (r.getColor().equals("NEGRO")) {
-                // Negro necesita fondo blanco para verse
-                System.out.print(FONDO_BLANCO + NEGRO + NEGRITA + r.getNumber() + RESET + " ");
+            String colorCode = getColorCode(r.getColor());
+            if (r.getColor().equals("BLACK")) {
+                // BLACK necesita fondo blanco para verse
+                System.out.print(WHITE_BACKGROUND + BLACK + BOLD + r.getNumber() + RESET + " ");
             } else {
-                System.out.print(colorCode + NEGRITA + r.getNumber() + RESET + " ");
+                System.out.print(colorCode + BOLD + r.getNumber() + RESET + " ");
             }
         }
         System.out.println();
     }
     
     // Función para imprimir el número ganador con color grande
-    static void imprimirNumeroConColor(int numero, String color) {
-        String colorCode = obtenerCodigoColor(color);
+    static void printNumberColor(int number, String color) {
+        String colorCode = getColorCode(color);
         
         System.out.print("   Número: ");
         
-        if (color.equals("NEGRO")) {
-            // Negro con fondo blanco para que se vea bien
-            System.out.print(FONDO_BLANCO + NEGRO + NEGRITA + numero + RESET);
+        if (color.equals("BLACK")) {
+            // BLACK con fondo blanco para que se vea bien
+            System.out.print(WHITE_BACKGROUND + BLACK + BOLD + number + RESET);
         } else {
-            System.out.print(colorCode + NEGRITA + numero + RESET);
+            System.out.print(colorCode + BOLD + number + RESET);
         }
         
         System.out.println(" (" + colorCode + color + RESET + ")");
     }
     
     // Devuelve el código ANSI según el color que lleva
-    static String obtenerCodigoColor(String color) {
+    static String getColorCode(String color) {
         switch (color) {
-            case "ROJO":
-                return ROJO;
-            case "VERDE":
-                return VERDE;
-            case "NEGRO":
-                return NEGRO;
+            case "RED":
+                return RED;
+            case "GREEN":
+                return GREEN;
+            case "BLACK":
+                return BLACK;
             default:
                 return RESET;
         }
     }
     
-    // Muestra estadísticas de todos los números que han salido durante las apuestas
-    static void mostrarEstadisticas(HashMap<Integer, Integer> stats, int totalTiradas) {
-        System.out.println("\n==================");
-        System.out.println("===ESTADISTÍCAS===");
-        System.out.println("==================");
-        System.out.printf("Total de tiradas: %d\n\n", totalTiradas);
-        System.out.println("Dinero total: " + money);
-        System.out.println("Números más frecuentes:");
+    // Muestra estadísticas de todos los números que han salido durante las bets
+    static void showStatistics(HashMap<Integer, Integer> stats, int totalBets) {
+        System.out.println("\n======================");
+        System.out.println("=====STATISTICS=====");
+        System.out.println("======================");
+        System.out.printf("Total plays: %d\n\n", totalBets);
+        System.out.println("Money total : " + money);
+        System.out.println("Most frequent numbers: ");
         stats.entrySet().stream()
             .sorted((a, b) -> b.getValue().compareTo(a.getValue())) // Ordenar por frecuencia
             .limit(5) // Top 5
             .forEach(entry -> {
-                double porcentaje = (entry.getValue() * 100.0) / totalTiradas;
-                System.out.printf("  Número %d: %d veces (%.1f%%)\n", 
-                    entry.getKey(), entry.getValue(), porcentaje);
+                double percentage = (entry.getValue() * 100.0) / totalBets;
+                System.out.printf("  Number %d: %d times (%.1f%%)\n", 
+                    entry.getKey(), entry.getValue(), percentage);
             });
     }
     
     // Animación simple del giro de ruleta
-    static void animarGiro() {
+    static void spinningAnimation() {
         System.out.print("\nGirando");
         for (int i = 0; i < 5; i++) {
             try {
@@ -260,11 +260,11 @@ public class Roulette {
         return (int) (Math.random() * (MAX - MIN)) + MIN;
     }
 
-    static void ruletaMenu() {
+    static void rouletteMenu() {
         System.out.println("========================");
-        System.out.println("====RULETA DE CASINO====");
+        System.out.println("====Casino roulette=====");
         System.out.println("========================");
-        System.out.println("Números del 0 al 36");
+        System.out.println("Numbers from 0 to 36");
         System.out.println("------------------------");
     }
 }
