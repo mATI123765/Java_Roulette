@@ -45,6 +45,7 @@ public class Roulette {
         ruletaMenu();
         
         boolean continuar = true;
+        boolean repetir = false;
         String respuesta_apuesta;
         int apuesta;
         while (continuar) {
@@ -60,14 +61,16 @@ public class Roulette {
                 continuar = false;
                 break;
             } else if (apuesta > money) {
+                repetir = true;
                 System.out.println("Calma bro, no tienes tanto dinero.");
                 System.out.print("¿Cuánto dinero apuestas? (0 para salir): ");
                 System.out.printf("Tienes %s euros \n", money);
                 apuesta = scanner.nextInt();
                 } else {
-                    continuar = true;
+                    repetir = false;
+                    break;
                 }
-            } while (apuesta < money);
+            } while (repetir);
             try {
                 System.out.print("¿A qué número apuestas? (0-36 / N para ninguno): ");
                 respuesta_apuesta = scanner.next();
