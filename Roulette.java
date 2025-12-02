@@ -2,43 +2,43 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Scanner;
 
-// Crear una clase nueva llamada ruleta para guardarla en el ArrayList
+// Create a new class called "Ruleta" to save it in the ArrayList
 class Ruleta {
     private String color;
     private int number;
 
-    // Crear el constructor ruleta
+    // Craete the roulette builder 
     public Ruleta(String color, int number) {
         this.color = color;
         this.number = number;
     }
 
-    public String getColor() { // Método para leer los datos del color de cada número
+    public String getColor() { // Method used to get the color data of each number
         return color;
     }
 
-    public int getNumber() { // Método para leer los datos de los números que salgan
+    public int getNumber() { // Method that fetches the given number data
         return number;
     }
 }
 
 public class Roulette {
-    // Tener los colores en código ANSI para que salga en cada número en la consola
-    public static final String RESET = "\u001B[0m";      // Resetear color
-    public static final String RED = "\u001B[31m";      // Texto RED
-    public static final String GREEN = "\u001B[32m";     // Texto GREEN
-    public static final String BLACK = "\u001B[30m";     // Texto BLACK
-    public static final String WHITE_BACKGROUND = "\u001B[47m"; // Fondo blanco para BLACK
-    public static final String BOLD = "\u001B[1m";    // Texto en BOLD
+    // Ansi code colors so it's shown in the console 
+    public static final String RESET = "\u001B[0m";      // Reset color
+    public static final String RED = "\u001B[31m";      // RED text
+    public static final String GREEN = "\u001B[32m";     // GREEN text
+    public static final String BLACK = "\u001B[30m";     // BLACK text
+    public static final String WHITE_BACKGROUND = "\u001B[47m"; // WHITE BACKGROUND for BLACK
+    public static final String BOLD = "\u001B[1m";    // Text in BOLD
     public static int money = 10000;
     
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
         
-        // HashMap para guardar estadísticas de cuántas veces salió cada número
+        // HashMap that saves de statics of how many times a number appears
         HashMap<Integer, Integer> statistics = new HashMap<>();
         
-        // ArrayList con el history de las últimas tiradas
+        // ArrayList with the history of the last rolls
         ArrayList<Ruleta> history = new ArrayList<>();
         
         printLinebreak(10);
@@ -53,7 +53,7 @@ public class Roulette {
             System.out.println("\n///////////////////");
             System.out.println("--------NEW BET------");
             do {
-            System.out.print("¿Cuánto dinero bets? (0 para salir): ");
+            System.out.print("How much money do you want to bet? (0 para salir): ");
             System.out.printf("You have %s pounds \n", money);
             bet = scanner.nextInt();
 
@@ -76,7 +76,7 @@ public class Roulette {
                 user_bet = scanner.next();
                 System.out.print("What color will you bet on? (RED-BLACK / enter for none): ");      
                 user_bet = scanner.nextLine();          
-            // Validar que el número esté en el rango correcto
+            // Validate that the number is within the range
             if (0 > Integer.parseInt(user_bet) || 30 < Integer.parseInt(user_bet)) {
 
                 System.out.println("Invalid number! It must be between 0 and 36.");
@@ -90,30 +90,30 @@ public class Roulette {
            
             user_bet = scanner.nextLine();
 
-            // GIRO DE LA RULETA - genera número aleatorio entre 1 y 30
-            int winningNumber = randomNumber(1, 31); // 31 es exclusivo, da 1-30
+            // ROULETTE SPIN - randomly generated number between 1 and 30
+            int winningNumber = randomNumber(1, 31); // 31 is exclusive, gives 1-30
             String winningColor = getColor(winningNumber);
             
-            // Crear objeto Ruleta con el result
+            // Create object "Ruleta" with the result
             Ruleta result = new Ruleta(winningColor, winningNumber);
             history.add(result);
             
-            // Actualizar estadísticas e incrementar contador del número que salió
+            // Update statistics and increment the counter of the displayed number
             statistics.put(winningNumber, statistics.getOrDefault(winningNumber, 0) + 1);
             
-            // Mostrar result con animación
+            // Show result with animation
             spinningAnimation();
             printLinebreak(3);
             System.out.println("\n The ball is spinning...!");
             printLinebreak(1);
             
-            // Mostrar número con color
+            // Show number with color
             printNumberColor(result.getNumber(), result.getColor());
             printLinebreak(1);
             
-            // Verificar si ganó y restar o sumar la earnings al dinero total
+            // Verify if the user won and add or subtract money from total earnings
             if (user_bet.equals(String.valueOf(winningNumber)) || user_bet.equalsIgnoreCase(winningColor)) {
-                int earnings = bet * 35; // En ruleta se paga 35 veces lo que se bet
+                int earnings = bet * 2.5; // In roulette (for now) it pays 2.5 times what you bet
                 System.out.println("¡¡¡YOU WON!!!");
                 System.out.printf("You bet: %d | you win: %d\n", bet, earnings);
                 money += earnings;
@@ -121,14 +121,14 @@ public class Roulette {
                 System.out.println(" You lost your bet.");
                 money = money - bet;
             }
-            // Verificar si el dinero no es negativo
+            // Verify if the money is negative
             if (money < 0) {
                 money = 0;
             }
-            // Mostrar history de últimas 5 tiradas
+            // Show history of last 5 spins
             showHistory(history);
             
-            // Preguntar si quiere ver estadísticas
+            // Ask if the user wants to see the statistics (stats)
             System.out.print("\n Check stats? (y/n): ");
             String answer = scanner.next().toLowerCase();
             if (answer.equalsIgnoreCase("y")) {
@@ -145,13 +145,13 @@ public class Roulette {
         scanner.close();
     }
     
-    // Determina el color según el número de la ruleta real de un casino
+    // Determines the color based on the number
     static String getColor(int number) {
         if (number == 0) {
-            return "GREEN"; // El 0 es GREEN en la ruleta del casino
+            return "GREEN"; // 0 is GREEN 
         }
         
-        // Números REDs en una ruleta
+        // RED numbers in the roulette
         int[] REDs = {1, 3, 5, 7, 9, 12, 14, 16, 18, 19, 21, 23, 25, 27, 32, 34, 36};
         
         for (int RED : REDs) {
@@ -160,12 +160,12 @@ public class Roulette {
             }
         }
         
-        return "BLACK"; // Si no es RED , será el color BLACK lokete
+        return "BLACK"; // If it's not RED, it will be BLACK my guy,
     }
     
-    // Muestra las últimas tiradas con los colores de cada número
+    // Show the last 5 spins with the colors 
     static void showHistory(ArrayList<Ruleta> history) {
-        int quantity = Math.min(5, history.size()); // Últimas 5 o menos
+        int quantity = Math.min(5, history.size()); // Last 5 or less
         
         if (quantity == 0) return;
         
@@ -175,10 +175,10 @@ public class Roulette {
         for (int i = history.size() - 1; i >= history.size() - quantity; i--) {
             Ruleta r = history.get(i);
             
-            // Imprimir cada número con su color
+            // Print each number with its color 
             String colorCode = getColorCode(r.getColor());
             if (r.getColor().equals("BLACK")) {
-                // BLACK necesita fondo blanco para verse
+                // BLACK needs a white background to be visible 
                 System.out.print(WHITE_BACKGROUND + BLACK + BOLD + r.getNumber() + RESET + " ");
             } else {
                 System.out.print(colorCode + BOLD + r.getNumber() + RESET + " ");
@@ -187,14 +187,14 @@ public class Roulette {
         System.out.println();
     }
     
-    // Función para imprimir el número ganador con color grande
+    // Function to print the winning number color in a bigger format
     static void printNumberColor(int number, String color) {
         String colorCode = getColorCode(color);
         
         System.out.print("   Número: ");
         
         if (color.equals("BLACK")) {
-            // BLACK con fondo blanco para que se vea bien
+            // BLACK with white background so it's visible
             System.out.print(WHITE_BACKGROUND + BLACK + BOLD + number + RESET);
         } else {
             System.out.print(colorCode + BOLD + number + RESET);
@@ -203,7 +203,7 @@ public class Roulette {
         System.out.println(" (" + colorCode + color + RESET + ")");
     }
     
-    // Devuelve el código ANSI según el color que lleva
+    // Returns the ANSI code depending on the color
     static String getColorCode(String color) {
         switch (color) {
             case "RED":
@@ -217,7 +217,7 @@ public class Roulette {
         }
     }
     
-    // Muestra estadísticas de todos los números que han salido durante las bets
+    // Shows statistics of all numbers shown in all spins
     static void showStatistics(HashMap<Integer, Integer> stats, int totalBets) {
         System.out.println("\n======================");
         System.out.println("=====STATISTICS=====");
@@ -235,7 +235,7 @@ public class Roulette {
             });
     }
     
-    // Animación simple del giro de ruleta
+    // Simple "spinning animation"
     static void spinningAnimation() {
         System.out.print("\nGirando");
         for (int i = 0; i < 5; i++) {
@@ -248,14 +248,14 @@ public class Roulette {
         }
     }
     
-    // Imprimir punto y aparte
+    // Line break printer
     static void printLinebreak(int linebreak) {
         for (int i = 0; i < linebreak; i++) {
             System.out.println();
         }
     }
     
-    // Genera número aleatorio entre MIN y MAX
+    // Generate a random number between the range
     static int randomNumber(int MIN, int MAX) {
         return (int) (Math.random() * (MAX - MIN)) + MIN;
     }
