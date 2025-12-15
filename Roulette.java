@@ -1,142 +1,58 @@
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.InputMismatchException;
 import java.util.Scanner;
 
-// PONER MENU A LO "MATIAS CASINO" AHI TO GUAPO
 
-
-
-// Create a new class called "Ruleta" to save it in the ArrayList
-class Ruleta {
-    private String color;
-    private int number;
-
-    // Craete the roulette builder 
-    public Ruleta(String color, int number) {
-        this.color = color;
-        this.number = number;
-    }
-
-    public String getColor() { // Method used to get the color data of each number
-        return color;
-    }
-
-    public int getNumber() { // Method that fetches the given number data
-        return number;
-    }
-}
-
-public class Roulette {
-    // Ansi code colors so it's shown in the console 
-    public static final String RESET = "\u001B[0m";      // Reset color
-    public static final String RED = "\u001B[31m";      // RED text
-    public static final String GREEN = "\u001B[32m";     // GREEN text
-    public static final String BLACK = "\u001B[30m";     // BLACK text
-    public static final String WHITE_BACKGROUND = "\u001B[47m"; // WHITE BACKGROUND for BLACK
-    public static final String BOLD = "\u001B[1m";    // Text in BOLD
-    public static int money = 10000;
+// Create a new class called "Roulette" with the color ansi codes and the money variable
+    public class Roulette {
+        // Ansi code colors so it's shown in the console 
+        public static final String RESET = "\u001B[0m";      // Reset color
+        public static final String RED = "\u001B[31m";      // RED text
+        public static final String GREEN = "\u001B[32m";     // GREEN text
+        public static final String BLACK = "\u001B[30m";     // BLACK text
+        public static final String WHITE_BACKGROUND = "\u001B[47m"; // WHITE BACKGROUND for BLACK
+        public static final String BOLD = "\u001B[1m";    // Text in BOLD
+        private static BankAccount account;
     
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
-        
+        InputValidator validator = new InputValidator(scanner);
+        rouletteWheel wheel = new rouletteWheel(0);
+
         // HashMap that saves de statics of how many times a number appears
         HashMap<Integer, Integer> statistics = new HashMap<>();
         
         // ArrayList with the history of the last rolls
-        ArrayList<Ruleta> history = new ArrayList<>();
+        ArrayList<ruleta> history = new ArrayList<>();
 
-        // 3 arrays containing the numbers of each row in the roulette table
-        int[] row1 = {1, 4, 7, 10, 13, 16, 19, 22, 25, 28, 31, 34};
-        int[] row2 = {2, 5, 8, 11, 14, 17, 20, 23, 26, 29, 32, 35};
-        int[] row3 = {3, 6, 9, 12, 15, 18, 21, 24, 27, 30, 33, 36};
-
-        
-        printLinebreak(10);
-        rouletteMenu();
-        
         boolean shouldContinue = true;
-        boolean repeat = false;
-        String user_bet_row = "";
-        String user_bet_number = "";
-        String user_bet_color = "";
-        String bet;
-        while (shouldContinue || money != 0) {
-            
-            System.out.println("\n///////////////////");
-            System.out.println("--------NEW BET------");
-            do {
-            System.out.print("How much money do you want to bet? (all / [number]) (0 to leave): ");
-            System.out.printf("You have %s pounds \n", money);
-            bet = scanner.nextLine();
-           /*  if (bet == "all") {
-                bet = ;
-            }
-                */
-            if (bet.equalsIgnoreCase("all")) {
-                shouldContinue = false;
-                break;
-            } else if (Integer.parseInt(bet) > money) {
-                repeat = true;
-                System.out.println("Chill bro, you ain't got that much money.");
-                System.out.print("How much money do you want to bet? (all / [number]) (0 to leave): ");
-                System.out.printf("You have %s pounds \n", money);
-                bet = scanner.nextLine();
-                } else {
-                    repeat = false;
-                    break;
-                }
-            } while (repeat);
-            try {
-                System.out.print("What number will you bet on? (0-36 / 0 for none): ");
-                user_bet_number = scanner.next();
-                if (user_bet_number.equalsIgnoreCase("N")) {   // Check if the user chose to not bet for a number
-                    user_bet_number = "";
-                }
-                if (0 > Integer.parseInt(user_bet_number) || 30 < Integer.parseInt(user_bet_number)) { // Validate that the number is within the range
-                    user_bet_number = "";
-                System.out.println("Invalid number! It must be between 0 and 36.");
-                continue;
-                }
-            } catch (NumberFormatException e) {
-                System.out.println("Invalid Input!");
-                continue;
-            }
-            Scanner scanner2 = new Scanner(System.in);
-                System.out.print("What color will you bet on? (RED-BLACK / 0 for none): ");      
-                user_bet_color = scanner2.next(); 
-                if (user_bet_color.equalsIgnoreCase("red")) { // make sure the user input matches the comparison to be made
-                    user_bet_color = "RED";
-                } else if (user_bet_color.equalsIgnoreCase("black")) { // make sure the user input matches the comparison made
-                    user_bet_color = "BLACK";
-                } else if (user_bet_color.equalsIgnoreCase("0")) {
-                    user_bet_color = "";
-                } else {
-                    System.out.println("Invalid color, choose one of the roulette colors, RED or BLACK"); // repeat the betting process if the user types a color that isn't RED or BLACK
-                    continue;
-                }
-                Scanner scanner3 = new Scanner(System.in);
-                System.out.print("What row will you bet on? (1-2-3 / 0 for none): ");  
-                user_bet_row = scanner3.nextLine();   
-                try {
-                if (Integer.parseInt(user_bet_row) > 3 || Integer.parseInt(user_bet_row) < 0) { // Check if the user is typing a valid row (1,2 or 3)
-                    System.out.println("You can only choose row 1, 2 or 3"); 
-                    continue;
-                } else if (Integer.parseInt(user_bet_row) == 0) {
-                    user_bet_row = "";
-                    }
-                } catch (NumberFormatException e) {
-                    System.out.println("Invalid input!!");
-                    continue;
-                }
+
+        account = new BankAccount(10000);
+    do {
+        rouletteMenu(); 
+        int betAmount = getBetAmount(scanner, account);
+        if (betAmount == -1) {
+            shouldContinue = false;
+            break;
+        }
+        String bet = String.valueOf(betAmount);
+        Bet playerBet = new Bet(
+            betAmount,
+            validator.getNumberBet(),
+            validator.getColorBet(),
+            validator.getRowBet(),
+            validator.get12thBet(),
+            validator.get18thBet(),
+            validator.getevenOddBet()
+        );
+
+
             // ROULETTE SPIN - randomly generated number between 1 and 36
-            int winningNumber = randomNumber(1, 36); // gives 1-36
-            winningNumber = 30;
-            String winningColor = getColor(winningNumber);
-            winningColor = "BLACK";
+            int winningNumber = wheel.spin();
+            String winningColor = wheel.getColor(winningNumber);
+            
             // Create object "Ruleta" with the result
-            Ruleta result = new Ruleta(winningColor, winningNumber);
+            ruleta result = new ruleta(winningColor, winningNumber);
             history.add(result);
             
             // Update statistics and increment the counter of the displayed number
@@ -151,63 +67,97 @@ public class Roulette {
             // Show number with color
             printNumberColor(result.getNumber(), result.getColor());
             printLinebreak(1);
-            
+
             // Verify if the user won and add or subtract money from total earnings
-            if (user_bet_number.equals(String.valueOf(winningNumber)) || user_bet_color.equalsIgnoreCase(winningColor)) {
-                int earnings = Integer.parseInt(bet); // In roulette (for now) it pays 2 times what you bet
+            boolean wonNumber = playerBet.hasBetOnNumber() && playerBet.getNumber() == winningNumber;
+            boolean wonColor = playerBet.hasBetOnColor() && playerBet.getColor().equals(winningColor);      
+            boolean wonRow = playerBet.hasBetOnRow() && checkRow(playerBet.getRow(), winningNumber);
+            boolean won12th = playerBet.hasBetOnTwelfth() && check12th(playerBet.getTwelfth(), winningNumber);
+            boolean won18th = playerBet.hasBetOnEighteenth() && check18th(playerBet.getEighteenth(), winningNumber);
+            boolean wonEvenOdd = playerBet.hasBetOnEvenOdd() && checkEvenOdd(playerBet.getEvenOdd(), winningNumber);
+
+            int winnings = calculateWinnings(betAmount, wonNumber, won12th, won18th, wonColor, wonRow, wonEvenOdd);
+
+            if (winnings > 0) {
                 System.out.println("¡¡¡YOU WON!!!");
-                System.out.printf("You bet: %d | you win: %d\n", bet, earnings);
-                money += earnings;
-            } else{
+                System.out.println("You bet : "+ bet + " you win: " + winnings);
+                account.deposit(winnings);
+            } else {
                 System.out.println(" You lost your bet.");
-                money = money - Integer.parseInt(bet);
+                account.withdraw(betAmount);
             }
             // Verify if the money is negative
-            if (money < 0) {
-                money = 0;
+            if (account.getBalance() <= 0) {
+                System.out.println("Bro you ran out of money! You're broke");
+                shouldContinue = false;
             }
             // Show history of last 5 spins
             showHistory(history);
             
             // Ask if the user wants to see the statistics (stats)
             System.out.print("\n Check stats? (y/n): ");
-            String answer = scanner.next().toLowerCase();
+            scanner.nextLine();
+            String answer = scanner.nextLine().toLowerCase();
             if (answer.equalsIgnoreCase("y")) {
                 showStatistics(statistics, history.size());
                 printLinebreak(3);
             } else {
-                printLinebreak(12);
+                printLinebreak(5);
                 rouletteMenu();
             }
-            
-        }
-        if (money == 0)
-        System.out.println("GG!");
-        System.out.println("Thanks for playing!");
-        scanner.close();
+    } while(shouldContinue && account.getBalance() > 0);
+    scanner.close();
     }
-    
-    // Determines the color based on the number
-    static String getColor(int number) {
-        if (number == 0) {
-            return "GREEN"; // 0 is GREEN 
+    // Check wether the 18th choice that user made coincides with the winning number
+    static boolean check18th(int eighteenthChoice, int winningNumber) {
+        if (winningNumber == 0 || eighteenthChoice == 0) return false;
+        
+        if (eighteenthChoice == 1) {
+            return winningNumber >= 1 && winningNumber <= 18;
+        } else if (eighteenthChoice == 2) {
+            return winningNumber >= 19 && winningNumber <= 36;
         }
-        
-        // row numbers in the roulette
-        int[] REDs = {2,4,6,8,10,12,14,16,18,20,22,24,26,28,30,32,34};
-        
-        // checks wether a number from row 1 to 3 is RED   
-        for (int RED : REDs) {
-            if (number == RED) {
-                return "RED";
+        return false;
+    }
+    // Check wether the row choice that user made coincides with the winning number
+    static boolean checkRow(int rowChoice, int winningNumber) {
+        if (winningNumber == 0 || rowChoice == 0) return false; // 0 isn't in any row  
+
+        if (rowChoice == 1) {
+            return winningNumber % 3 == 1;
+        } else if (rowChoice == 2) {
+            return winningNumber % 3 == 2;
+        } else if (rowChoice == 3) {
+            return winningNumber % 3 == 0;
             }
-        }
+        return false;
+        }   
+    // checks if winningNumber is between the first, second or third 12th depending on what the user's choice was
+    static boolean check12th(int twelfthChoice, int winningNumber) {
+    if (winningNumber == 0 || twelfthChoice == 0) return false;
+    
+    if (twelfthChoice == 1) {
+        return winningNumber >= 1 && winningNumber <= 12;
+    } else if (twelfthChoice == 2) {
+        return winningNumber >= 13 && winningNumber <= 24;
+    } else if (twelfthChoice == 3) {
+        return winningNumber >= 25 && winningNumber <= 36;
+    }
+    return false;
+}
+    static boolean checkEvenOdd(int evenOddChoice, int winningNumber) {
+        if (winningNumber == 0 || evenOddChoice == 0) return false;
         
-        return "BLACK"; // If it's not RED, it will be BLACK my guy.
+        if (evenOddChoice == 1) { // Even
+            return winningNumber % 2 == 0;
+        } else if (evenOddChoice == 2) { // Odd
+            return winningNumber % 2 != 0;
+        }
+        return false;
     }
     
     // Show the last 5 spins with the colors 
-    static void showHistory(ArrayList<Ruleta> history) {
+    static void showHistory(ArrayList<ruleta> history) {
         int quantity = Math.min(5, history.size()); // Last 5 or less
         
         if (quantity == 0) return;
@@ -216,7 +166,7 @@ public class Roulette {
         System.out.println("------LAST  PLAYS------");
         System.out.println("/////////////////////\n");
         for (int i = history.size() - 1; i >= history.size() - quantity; i--) {
-            Ruleta r = history.get(i);
+            ruleta r = history.get(i);
             
             // Print each number with its color 
             String colorCode = getColorCode(r.getColor());
@@ -266,18 +216,17 @@ public class Roulette {
         System.out.println("=====STATISTICS=====");
         System.out.println("======================");
         System.out.printf("Total plays: %d\n\n", totalBets);
-        System.out.println("Money total : " + money);
+        System.out.println("");
         System.out.println("Most frequent numbers: ");
         stats.entrySet().stream()
             .sorted((a, b) -> b.getValue().compareTo(a.getValue())) // Order by frequency
             .limit(5) // Top 5
-            .forEach(entry -> {
+            .forEach(entry -> { 
                 double percentage = (entry.getValue() * 100.0) / totalBets;
                 System.out.printf("  Number %d: %d times (%.1f%%)\n", 
                     entry.getKey(), entry.getValue(), percentage);
             });
     }
-    
     // Simple "spinning animation"
     static void spinningAnimation() {
         System.out.print("\nSpinning");
@@ -303,12 +252,64 @@ public class Roulette {
         return (int) (Math.random() * (MAX - MIN)) + MIN;
     }
 
-    static void rouletteMenu() {
-        System.out.println("========================");
-        System.out.println("====Casino roulette=====");
-        System.out.println("========================");
-        System.out.println("Numbers from 0 to 36");
-        System.out.println("------------------------");
+
+    static void rouletteMenu () {
+        System.out.println("  ____    _    ____ ___ _   _  ___  ");
+        System.out.println(" / ___|  / \\  / ___|_ _| \\ | |/ _ \\ ");
+        System.out.println("| |     / _ \\ \\___ \\| ||  \\| | | | |");
+        System.out.println("| |___ / ___ \\ ___) | || |\\  | |_| |");
+        System.out.println(" \\____/_/   \\_\\____/___|_| \\_|\\___/ ");
+        System.out.println(" ____   ___  _   _ _     _____ _____ _____ _____ ");
+        System.out.println("|  _ \\ / _ \\| | | | |   | ____|_   _|_   _| ____|");
+        System.out.println("| |_) | | | | | | | |   |  _|   | |   | | |  _|  ");
+        System.out.println("|  _ <| |_| | |_| | |___| |___  | |   | | | |___ ");
+        System.out.println("|_| \\_\\\\___/ \\___/|_____|_____| |_|   |_| |_____|");
+    }
+   static int getBetAmount(Scanner scanner, BankAccount account) {
+    while (true) {
+        System.out.print("How much money do you want to bet? (all / [number]) (0 to leave): ");
+        System.out.printf("You have %s pounds\n", account.getBalance());
+        String bet = scanner.nextLine().trim();
+        
+        if (bet.equalsIgnoreCase("all")) {
+            return account.getBalance();
+        }
+            try {
+                int betAmount = Integer.parseInt(bet);
+                if (betAmount == 0) {
+                    return -1; // Signal to exit
+                } else if (betAmount > account.getBalance()) {
+                    System.out.println("Chill bro, you ain't got that much money.");
+                } else if (betAmount < 0) {
+                    System.out.println("Bet amount must be positive.");
+                } else {
+                    return betAmount;
+                }
+            } catch (NumberFormatException e) {
+                System.out.println("Invalid bet amount. Please enter a number or 'all'.");
+            }
+        }
+    }
+    static int calculateWinnings(int betAmount, boolean wonNumber, boolean won12th, boolean won18th, boolean wonColor, boolean wonRow, boolean wonEvenOdd) {
+        int totalWinnings = 0;
+         if (wonNumber) {
+            totalWinnings += betAmount * 35;
+        }
+        if (wonColor) {
+            totalWinnings += betAmount * 2;
+        }
+        if (wonRow) {
+            totalWinnings += betAmount * 3;
+        }
+        if (won12th) {
+            totalWinnings += betAmount * 3;
+        }
+        if (won18th) {
+            totalWinnings += betAmount * 2;
+        }
+        if (wonEvenOdd) {
+            totalWinnings += betAmount * 2;
+        }
+        return totalWinnings;
     }
 }
-
